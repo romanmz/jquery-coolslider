@@ -1,5 +1,5 @@
 /*!
- * Slidebox v1.0
+ * Slidebox v1.01
  * http://github.com/romanmz/slidebox
  * By Roman Martinez - http://romanmx.com
  * MIT License
@@ -12,7 +12,7 @@
 	
 	
 	// ----- PRIVATE DATA -----
-	var version = '1.0'; // 2013/10/21
+	var version = '1.01'; // 2013/10/22
 	var name = 'slidebox';
 	var defaults = {
 		type: 'fade',			// 'fade', 'scroll'
@@ -173,7 +173,7 @@
 				
 				// Exit if user is pinching
 				if( e.touches.length>1 || e.scale && e.scale!==1 ) {
-					return false;
+					return;
 				}
 				
 				// Update vars
@@ -181,11 +181,11 @@
 				touchData.deltaY = e.touches[0].pageY - touchData.startY;
 				
 				// Exit if swipe is vertical
-				if( typeof touchData.verticalSwipe == 'undefined' ) {
-					touchData.verticalSwipe = ( Math.abs( touchData.deltaX ) < Math.abs( touchData.deltaY ) );
+				if( typeof touchData.isVertical == 'undefined' ) {
+					touchData.isVertical = ( Math.abs( touchData.deltaX ) < Math.abs( touchData.deltaY ) );
 				}
-				if( touchData.verticalSwipe ) {
-					return false;
+				if( touchData.isVertical ) {
+					return;
 				}
 				
 				// Add resistance and relative swipe data
@@ -207,7 +207,7 @@
 			// ----- EVENT: touchend -----
 			.on( 'touchend.'+name, function(e){
 				// Exit if its vertical swipe
-				if( touchData.verticalSwipe ) {
+				if( touchData.isVertical ) {
 					return;
 				}
 				
@@ -352,7 +352,7 @@
 			// Validate
 			number = (number>last) ? (loop) ? 0 : last : (number<0) ? (loop) ? last : 0 : number;
 			if( !data.forced && (data.moving || number==data.selected) ) {
-				return false;
+				return;
 			}
 			
 			// Update data
@@ -399,32 +399,33 @@
 			
 			this.data.loopDir = -1
 			this.showSlide( this.data.selected-1 );
-			return false;
 			
 		},
 		showNext: function() {
 			
 			this.data.loopDir = 1;
 			this.showSlide( this.data.selected+1 );
-			return false;
 			
 		},
 		stopSlides: function() {
 			
 			var P = this, data = P.data, controls = P.controls, options = P.options;
-			controls.playLink.addClass( options.controlsPausedClass );
-			controls.pauseLink.addClass( options.controlsPausedClass );
+			if( controls ) {
+				controls.playLink.addClass( options.controlsPausedClass );
+				controls.pauseLink.addClass( options.controlsPausedClass );
+			}
 			data.playing = false;
 			data.forced = true;
 			P.showSlide( data.selected, 0 );
-			return false;
 			
 		},
 		playSlides: function() {
 			
 			var P = this, data = P.data, controls = P.controls, options = P.options;
-			controls.playLink.removeClass( options.controlsPausedClass );
-			controls.pauseLink.removeClass( options.controlsPausedClass );
+			if( controls ) {
+				controls.playLink.removeClass( options.controlsPausedClass );
+				controls.pauseLink.removeClass( options.controlsPausedClass );
+			}
 			data.playing = true;
 			data.visualTimer.stop(true,false).css({ marginLeft:0 }).animate({ width:'100%' },{ duration:options.timer });
 			
@@ -434,7 +435,6 @@
 				P.data.loopDir = 1;
 				P.showSlide( next );
 			}, options.timer );
-			return false;
 			
 		},
 		
@@ -500,7 +500,6 @@
 			var useTouch = ( options.swipe && data.touch );
 			var loop = ( options.loop && !useTouch );
 			var touchData = data.touchData;
-			
 			//slides.css({ 'user-select': 'none' });
 			//slider.find('*').css({ '-webkit-backface-visibility':'hidden' });
 			
@@ -561,8 +560,10 @@
 				})
 				.on( 'touchmove.'+name, function(){
 					
-					var target = data.selected + ( data.touchData.swipeX / -data.touchData.resistance );
-					transitionTo( target, 0 );
+					if( !touchData.isVertical ) {
+						var target = data.selected + ( touchData.swipeX / -touchData.resistance );
+						transitionTo( target, 0 );
+					}
 					
 				})
 				.on( 'swipesuccess.'+name, function(){
