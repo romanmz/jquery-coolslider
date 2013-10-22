@@ -1,7 +1,7 @@
 /*!
  * Slidebox v1.01
  * http://github.com/romanmz/slidebox
- * By Roman Martinez - http://romanmx.com
+ * By Roman Martinez - http://romanmz.com
  * MIT License
  */
 
@@ -50,6 +50,39 @@
 		swipesuccess: function(){},
 		swipefail: function(){}
 	};
+	
+	// Detect transforms3d. https://gist.github.com/lorenzopolidori/3794226
+	function hasTransforms3d() {
+		var el = document.createElement('p'),
+		has3d,
+		transforms = {
+			'webkitTransform':'-webkit-transform',
+			'OTransform':'-o-transform',
+			'msTransform':'-ms-transform',
+			'MozTransform':'-moz-transform',
+			'transform':'transform'
+		};
+		document.body.insertBefore(el, null);
+		for( var t in transforms ) {
+			if( el.style[t] !== undefined ) {
+				el.style[t] = 'translate3d(1px,1px,1px)';
+				has3d = window.getComputedStyle(el).getPropertyValue(transforms[t]);
+			}
+		}
+		document.body.removeChild(el);
+		return ( has3d !== undefined && has3d.length > 0 && has3d !== "none" );
+	}
+	
+	// Detect transitions. http://stackoverflow.com/questions/7264899/detect-css-transitions-using-javascript-and-without-modernizr/13081497#13081497
+	function hasTransitions() {
+		var s = document.createElement('p').style;
+		var supportsTransitions =	'transition' in s ||
+									'WebkitTransition' in s ||
+									'MozTransition' in s ||
+									'msTransition' in s ||
+									'OTransition' in s;
+		return supportsTransitions;
+	}
 	
 	
 	
@@ -102,7 +135,9 @@
 				selectedSlide: $(),
 				previousSlide: $(),
 				otherSlides: $(),
-				visualTimer: (options.visualTimer) ? $(options.visualTimer) : $()
+				visualTimer: (options.visualTimer) ? $(options.visualTimer) : $(),
+				csstransforms3d: (typeof Modernizr!='undefined' && Modernizr.csstransforms3d) || hasTransforms3d(),
+				csstransitions: (typeof Modernizr!='undefined' && Modernizr.csstransitions) || hasTransitions()
 			};
 			if( options.showFirst == 'random' ) {
 				options.showFirst = Math.ceil( Math.random() * data.total );
@@ -518,7 +553,7 @@
 			// Function to move the slider
 			function transitionTo( target, speed ) {
 				var left;
-				if( Modernizr.csstransforms3d && Modernizr.csstransitions ) {
+				if( data.csstransforms3d && data.csstransitions ) {
 					left = ( target / allTotal * -100 ) + '%';
 					slider.css({ 'transform':'translate3d( '+left+',0,0 )', 'transition-duration':speed+'ms' });
 				} else {
