@@ -6,6 +6,7 @@
 	<meta name="viewport" content="initial-scale=1">
 	<link href="demo-files/styles.css" rel="stylesheet" type="text/css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<!--<script src="http://desandro.github.io/imagesloaded/imagesloaded.pkgd.js"></script>-->
 	<script src="jquery.slidebox.js"></script>
 	<script>
 		$(document).ready(function(){
@@ -25,6 +26,8 @@
 				autoplay: false,		// true or false
 				keyboard: true,			// true or false
 				swipe: 'scroll',		// false or 'scroll'
+				//jsFixHeights: false,	// true or false (for better results, load the "imagesLoaded" plugin)
+				jsFixHeights: true,
 				
 				selectedSlideClass: 'selected',
 				previousSlideClass: 'previous',

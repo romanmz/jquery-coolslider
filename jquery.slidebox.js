@@ -26,6 +26,7 @@
 		autoplay: false,		// true or false
 		keyboard: true,			// true or false
 		swipe: 'scroll',		// false or 'scroll'
+		jsFixHeights: false,	// true or false (for better results, load the "imagesLoaded" plugin)
 		
 		selectedSlideClass: 'selected',
 		previousSlideClass: 'previous',
@@ -168,6 +169,23 @@
 			options.init.call( P, element, slides, options, data );
 			P.createControls();
 			P.showSlide( options.showFirst-1, 0 );
+			
+			// Fix Slides Heighs with Javascript
+			if( options.jsFixHeights ) {
+				function fixHeight() {
+					var maxH = 0;
+					slides.height('').each(function(){
+						maxH = Math.max( maxH, $(this).height() );
+					}).height( maxH );
+				}
+				fixHeight();
+				setTimeout( fixHeight, 500 );
+				$(window).on( 'load.'+name, fixHeight );
+				$(window).on( 'resize.'+name, fixHeight );
+				if( typeof $.fn.imagesLoaded == 'function' ) {
+					slides.imagesLoaded().progress( fixHeight );
+				}
+			}
 			
 		},
 		
