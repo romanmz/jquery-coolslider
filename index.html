@@ -12,7 +12,6 @@
 		$(document).ready(function(){
 			
 			
-			// swiping in touch devices requires Modernizr.csstransforms3d & Modernizr.csstransitions
 			$('#slideshow').slidebox({
 				type: 'fade',			// 'fade', 'scroll'
 				slides: '> *',			// css selector
@@ -55,23 +54,23 @@
 
 <div id="controls"></div>
 <div id="timer"><div class="progress"></div></div>
-<div id="slideshow" class="cf">
+<div id="slideshow">
 	<div class="slide" data-slide-title="1. You can use titles">
-		<a href="#">
+		<a href="#1">
 			<div class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
 			<img alt="" src="demo-files/image1.jpg">
 		</a>
 	</div>
 	<div class="slide">
-		<a href="#">
+		<a href="#2">
 			<div class="caption">Praesent augue mi, viverra nec venenatis vitae, mollis eget dui.</div>
 			<img alt="" src="demo-files/image2.jpg">
 		</a>
 	</div>
 	<div class="slide">
-		<a href="#">
+		<a href="#3">
 			<div class="caption">Praesent magna purus, molestie sit amet purus at, accumsan.</div>
-			<img alt="" src="demo-files/image3.jpg">
+			<img alt="" src="demo-files/image3.jpg" height="200">
 		</a>
 	</div>
 </div>

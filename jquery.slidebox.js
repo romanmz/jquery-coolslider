@@ -1,5 +1,5 @@
 /*!
- * Slidebox v1.01
+ * Slidebox v1.02
  * http://github.com/romanmz/slidebox
  * By Roman Martinez - http://romanmz.com
  * MIT License
@@ -12,7 +12,7 @@
 	
 	
 	// ----- PRIVATE DATA -----
-	var version = '1.01'; // 2013/10/22
+	var version = '1.02'; // 2013/10/23
 	var name = 'slidebox';
 	var defaults = {
 		type: 'fade',			// 'fade', 'scroll'
@@ -553,8 +553,6 @@
 			var useTouch = ( options.swipe && data.touch );
 			var loop = ( options.loop && !useTouch );
 			var touchData = data.touchData;
-			//slides.css({ 'user-select': 'none' });
-			//slider.find('*').css({ '-webkit-backface-visibility':'hidden' });
 			
 			// Duplicate slides for loops
 			if( loop ) {
@@ -565,6 +563,9 @@
 			}
 			
 			// Setup styles
+			if( element.css('position')=='static' ) {
+				element.css( 'position', 'relative' );
+			}
 			slider.css({ position:'relative', left:0, top:0, width:( allTotal * 100 )+'%' });
 			allSlides.css({ float:'left', width:( 100 / allTotal )+'%' });
 			
@@ -573,7 +574,8 @@
 				var left;
 				if( data.csstransforms3d && data.csstransitions ) {
 					left = ( target / allTotal * -100 ) + '%';
-					slider.css({ 'transform':'translate3d( '+left+',0,0 )', 'transition-duration':speed+'ms' });
+					var translate = (useTouch) ? 'translate3d('+left+',0,0)' : 'translateX('+left+')';
+					slider.css({ 'transform':translate, 'transition-duration':speed+'ms' });
 				} else {
 					left = ( target * -100 ) + '%';
 					slider.animate({ left:left },{ duration:speed });
