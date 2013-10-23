@@ -1,5 +1,5 @@
 /*!
- * Slidebox v1.02
+ * Slidebox v1.03
  * http://github.com/romanmz/slidebox
  * By Roman Martinez - http://romanmz.com
  * MIT License
@@ -12,7 +12,7 @@
 	
 	
 	// ----- PRIVATE DATA -----
-	var version = '1.02'; // 2013/10/23
+	var version = '1.03'; // 2013/10/23
 	var name = 'slidebox';
 	var defaults = {
 		type: 'fade',			// 'fade', 'scroll'
@@ -517,25 +517,28 @@
 		// ----- TRANSITION: FADE -----
 		fade: function( element, slides, options, data ) {
 			
-			// Create container and placeholder
+			// Create vars
 			var container = this.createContainer();
-			slides.first().clone().insertBefore( slides.first() ).css({ visibility:'hidden' });
+			var slideWidth = 100 / data.total;
 			
 			// Setup styles
-			container.css({ position:'relative' });
-			slides.css({ position:'absolute', left:0, top:0, zIndex:0, width:'100%' }).hide();
+			element.css({ overflow:'hidden' });
+			container.css({ position:'relative', left:0, top:0, width:( data.total * 100 )+'%' });
+			slides.css({ position:'relative', float:'left', width:slideWidth+'%', zIndex:0, opacity:0, visibility:'hidden' }).each(function(i,el){
+				$(this).css({ left: slideWidth*-i+'%' });
+			});
 			
 			// Bind events listeners
 			element
 			.on( 'slidestart.'+name, function(){
-				data.selectedSlide.css({ zIndex:1 }).fadeIn( data.speed );
-				if( options.simultaneous ) {
-					data.previousSlide.fadeOut( data.speed );
-				}
+				data.selectedSlide.css({ zIndex:1, visibility:'visible' }).fadeTo( data.speed, 1 );
+				setTimeout(function(){
+					data.previousSlide.fadeTo( data.speed/2, 0 );
+				}, data.speed/2 );
 			})
 			.on( 'slideend.'+name, function(){
 				data.selectedSlide.css({ zIndex:0 });
-				data.previousSlide.hide();
+				data.previousSlide.css({ visibility:'hidden' });
 			});
 		},
 		
