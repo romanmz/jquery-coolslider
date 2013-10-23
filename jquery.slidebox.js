@@ -2,7 +2,6 @@
  * Slidebox v1.03
  * http://github.com/romanmz/slidebox
  * By Roman Martinez - http://romanmz.com
- * MIT License
  */
 
 // ------------------------- SLIDEBOX -------------------------
@@ -26,7 +25,7 @@
 		autoplay: false,		// true or false
 		keyboard: true,			// true or false
 		swipe: 'scroll',		// false or 'scroll'
-		jsFixHeights: false,	// true or false (for better results, load the "imagesLoaded" plugin)
+		fixHeight: false,		// true or false (for better results, load the "imagesLoaded" plugin)
 		
 		selectedSlideClass: 'selected',
 		previousSlideClass: 'previous',
@@ -171,7 +170,7 @@
 			P.showSlide( options.showFirst-1, 0 );
 			
 			// Fix Slides Heighs with Javascript
-			if( options.jsFixHeights ) {
+			if( options.fixHeight ) {
 				function fixHeight() {
 					var maxH = 0;
 					slides.height('').each(function(){
