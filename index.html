@@ -2,17 +2,17 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Slidebox</title>
+	<title>coolSlider() is cool</title>
 	<meta name="viewport" content="initial-scale=1">
 	<link href="demo-files/styles.css" rel="stylesheet" type="text/css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<!--<script src="http://desandro.github.io/imagesloaded/imagesloaded.pkgd.js"></script>-->
-	<script src="jquery.slidebox.js"></script>
+	<script src="jquery.coolSlider.js"></script>
 	<script>
 		$(document).ready(function(){
 			
 			
-			$('#slideshow').slidebox({
+			$('#slideshow').coolSlider({
 				type: 'fade',			// 'fade', 'scroll'
 				slides: '> *',			// css selector
 				timer: 8000,			// milliseconds (time before changing slides when autoplay is on)
@@ -36,12 +36,12 @@
 				
 				//addControls: true,		// true, false, 'before', 'after', 'prepend', 'append', css selector (true defaults to 'prepend')
 				addControls: '#controls',
-				controls: '<div class="slidebox-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
-				prevLink: '<li class="slidebox-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
-				nextLink: '<li class="slidebox-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
-				playLink: '<li class="slidebox-controls-play"><a href="#">▶<span> Play slideshow</span></a></li>',
-				pauseLink: '<li class="slidebox-controls-pause"><a href="#">■<span> Pause slideshow</span></a></li>',
-				navLinks: '<li class="slidebox-controls-number"><a href="#"><span class="default-text">Show slide </span><span class="alt-text">Showing slide </span>{{title}}</a></li>'
+				controls: '<div class="coolSlider-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
+				prevLink: '<li class="coolSlider-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
+				nextLink: '<li class="coolSlider-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
+				playLink: '<li class="coolSlider-controls-play"><a href="#">▶<span> Play slideshow</span></a></li>',
+				pauseLink: '<li class="coolSlider-controls-pause"><a href="#">■<span> Pause slideshow</span></a></li>',
+				navLinks: '<li class="coolSlider-controls-number"><a href="#"><span class="default-text">Show slide </span><span class="alt-text">Showing slide </span>{{title}}</a></li>'
 			});
 			
 			
@@ -55,7 +55,7 @@
 <div id="controls"></div>
 <div id="timer"><div class="progress"></div></div>
 <div id="slideshow">
-	<div class="slide" data-slide-title="1. You can use titles">
+	<div class="slide">
 		<a href="#1">
 			<div class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
 			<img alt="" src="demo-files/image1.jpg">

@@ -1,6 +1,6 @@
 /*!
- * Slidebox v1.03
- * http://github.com/romanmz/slidebox
+ * coolSlider v1.03
+ * http://github.com/romanmz/coolSlider
  * By Roman Martinez - http://romanmz.com
  */
 
@@ -12,7 +12,7 @@
 	
 	// ----- PRIVATE DATA -----
 	var version = '1.03'; // 2013/10/23
-	var name = 'slidebox';
+	var name = 'coolSlider';
 	var defaults = {
 		type: 'fade',			// 'fade', 'scroll'
 		slides: '> *',			// css selector
@@ -34,12 +34,12 @@
 		controlsSelectedClass: 'selected',
 		
 		addControls: true,		// true, false, 'before', 'after', 'prepend', 'append', css selector (true defaults to 'prepend')
-		controls: '<div class="slidebox-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
-		prevLink: '<li class="slidebox-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
-		nextLink: '<li class="slidebox-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
-		playLink: '<li class="slidebox-controls-play"><a href="#">▶<span> Play slideshow</span></a></li>',
-		pauseLink: '<li class="slidebox-controls-pause"><a href="#">■<span> Pause slideshow</span></a></li>',
-		navLinks: '<li class="slidebox-controls-number"><a href="#"><span class="default-text">Show slide </span><span class="alt-text">Showing slide </span>{{title}}</a></li>',
+		controls: '<div class="coolSlider-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
+		prevLink: '<li class="coolSlider-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
+		nextLink: '<li class="coolSlider-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
+		playLink: '<li class="coolSlider-controls-play"><a href="#">▶<span> Play slideshow</span></a></li>',
+		pauseLink: '<li class="coolSlider-controls-pause"><a href="#">■<span> Pause slideshow</span></a></li>',
+		navLinks: '<li class="coolSlider-controls-number"><a href="#"><span class="default-text">Show slide </span><span class="alt-text">Showing slide </span>{{title}}</a></li>',
 		
 		init: function(){},
 		slidestart: function(){},

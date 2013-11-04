@@ -67,28 +67,28 @@ a:hover {
 
 
 /* --- Controls --- */
-.slidebox-controls {
+.coolSlider-controls {
 	margin: 0 0 15px;
 	overflow: hidden;
 }
-.slidebox-controls h3 {
+.coolSlider-controls h3 {
 	margin: 0;
 	line-height: 1;
 }
-.slidebox-controls p {
+.coolSlider-controls p {
 	margin: 0 0 10px;
 }
-.slidebox-controls ul,
-.slidebox-controls ol {
+.coolSlider-controls ul,
+.coolSlider-controls ol {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	float: left;
 }
-.slidebox-controls li {
+.coolSlider-controls li {
 	float: left;
 }
-.slidebox-controls li a {
+.coolSlider-controls li a {
 	display: block;
 	min-width: 10px;
 	padding: 0 5px;
@@ -98,26 +98,26 @@ a:hover {
 	color: #333;
 	background: #DDD;
 }
-.slidebox-controls li a span {
+.coolSlider-controls li a span {
 	display: none;
 }
 
-.slidebox-controls-play {
+.coolSlider-controls-play {
 	display: none;
 }
-.slidebox-controls-play.paused {
+.coolSlider-controls-play.paused {
 	display: list-item;
 }
-.slidebox-controls-pause.paused {
+.coolSlider-controls-pause.paused {
 	display: none;
 }
 
-.slidebox-controls li a:hover,
-.slidebox-controls li.selected a {
+.coolSlider-controls li a:hover,
+.coolSlider-controls li.selected a {
 	color: white;
 	background: #069;
 }
-.slidebox-controls li.disabled a {
+.coolSlider-controls li.disabled a {
 	color: #333;
 	background: #DDD;
 	cursor: default;

@@ -1,4 +1,5 @@
-slidebox
+coolSlider
 ========
 
-Flexible, responsive and customizable slider
+coolSlider() is a cool slider
+Flexible, responsive and customizable
