@@ -1,0 +1,9 @@
+- Cross browser testing
+- Reset/destroy
+- Documentation
+- Create demos
+- Hide slides on scroll type
+- Add more custom classes
+
+slides.css({ 'user-select': 'none' });
+slider.find('*').css({ '-webkit-backface-visibility':'hidden' });
