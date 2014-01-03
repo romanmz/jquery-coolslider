@@ -1,24 +1,21 @@
 /*!
- * coolSlider v1.03
+ * coolSlider v1.04
  * http://github.com/romanmz/coolSlider
  * By Roman Martinez - http://romanmz.com
  */
 
-// ------------------------- SLIDEBOX -------------------------
-// ------------------------------------------------------------
 ;(function($,window,undefined){
 	
 	
 	
 	// ----- PRIVATE DATA -----
-	var version = '1.03'; // 2013/10/23
 	var name = 'coolSlider';
 	var defaults = {
 		type: 'fade',			// 'fade', 'scroll'
 		slides: '> *',			// css selector
 		timer: 8000,			// milliseconds (time before changing slides when autoplay is on)
 		speed: 500,				// milliseconds (speed of transition between slides)
-		showFirst: 'random',	// number or 'random'
+		showFirst: 1,	// number or 'random'
 		visualTimer: false,		// false or css selector
 		
 		loop: false,			// true or false
@@ -299,7 +296,8 @@
 			
 			// Markup variables
 			for( var key in templates ) {
-				templates[key] = options[key].replace( /\{\{([^}]+)\}\}/g, '<span data-replace-with="$1">$1</span>' );
+				var string = typeof options[key] == 'string' ? options[key] : '';
+				templates[key] = string.replace( /\{\{([^}]+)\}\}/g, '<span data-replace-with="$1">$1</span>' );
 			}
 			P.controls = controls = $( templates.controls );
 			
