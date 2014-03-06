@@ -4,6 +4,11 @@
 - Create demos
 - Hide slides on scroll type
 - Add more custom classes
+- Fix subpixel rendering issue (recalculate width)
+- Check image loading issue with looping scroll
+- Glitch in iOS7
 
 slides.css({ 'user-select': 'none' });
 slider.find('*').css({ '-webkit-backface-visibility':'hidden' });
+
+-webkit-transform-style: preserve-3d;

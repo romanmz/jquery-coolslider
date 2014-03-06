@@ -1,5 +1,5 @@
 /*!
- * coolSlider v1.04
+ * coolSlider v1.05
  * http://github.com/romanmz/coolSlider
  * By Roman Martinez - http://romanmz.com
  */
@@ -30,7 +30,7 @@
 		controlsPausedClass: 'paused',
 		controlsSelectedClass: 'selected',
 		
-		addControls: true,		// true, false, 'before', 'after', 'prepend', 'append', css selector (true defaults to 'prepend')
+		addControls: true,		// true, false, 'before', 'after', 'prepend', 'append', css selector (true defaults to 'before')
 		controls: '<div class="coolSlider-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
 		prevLink: '<li class="coolSlider-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
 		nextLink: '<li class="coolSlider-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
@@ -301,12 +301,31 @@
 			}
 			P.controls = controls = $( templates.controls );
 			
+			// Insert into DOM
+			switch( options.addControls ) {
+				case true:
+					options.addControls = 'before';
+				case 'before':
+				case 'after':
+				case 'prepend':
+				case 'append':
+					P.element[options.addControls]( controls );
+					break;
+				default:
+					$( options.addControls ).append( controls );
+					break;
+			}
+			
 			// Create controls
 			for( var key in templates ) {
 				switch( key ) {
 					case 'prevLink': case 'nextLink': case 'playLink': case 'pauseLink':
 						controls[key] = $( templates[key] );
-						controls.find( '[data-replace-with="'+key+'"]').replaceWith( controls[key] );
+						var replaceThis = controls.filter( '[data-replace-with="'+key+'"]' );
+						if( !replaceThis.length ) {
+							replaceThis = controls.find( '[data-replace-with="'+key+'"]' );
+						}
+						replaceThis.replaceWith( controls[key] );
 						break;
 				}
 			}
@@ -328,42 +347,37 @@
 			controls.find( '[data-replace-with="navLinks"]' ).replaceWith( navLinks );
 			controls.navLinks = navLinks;
 			
-			// Insert into DOM
-			switch( options.addControls ) {
-				case true:
-					options.addControls = 'before';
-				case 'before':
-				case 'after':
-				case 'prepend':
-				case 'append':
-					P.element[options.addControls]( controls );
-					break;
-				default:
-					$( options.addControls ).append( controls );
-					break;
-			}
-			
 			// Bind events listeners
 			P.element.on( 'slidestart.'+name, function(){
 				P.updateControls();
 			});
-			controls.prevLink.find('a').on( 'click.'+name, function(){
+			
+			var prevLink = controls.prevLink.find('a').length ? controls.prevLink.find('a') : controls.prevLink;
+			prevLink.on( 'click.'+name, function(){
 				P.showPrevious();
 				return false;
 			});
-			controls.nextLink.find('a').on( 'click.'+name, function(){
+			
+			var nextLink = controls.nextLink.find('a').length ? controls.nextLink.find('a') : controls.nextLink;
+			nextLink.on( 'click.'+name, function(){
 				P.showNext();
 				return false;
 			});
-			controls.playLink.find('a').on( 'click.'+name, function(){
+			
+			var playLink = controls.playLink.find('a').length ? controls.playLink.find('a') : controls.playLink;
+			playLink.on( 'click.'+name, function(){
 				P.playSlides();
 				return false;
 			});
-			controls.pauseLink.find('a').on( 'click.'+name, function(){
+			
+			var pauseLink = controls.pauseLink.find('a').length ? controls.pauseLink.find('a') : controls.pauseLink;
+			pauseLink.on( 'click.'+name, function(){
 				P.stopSlides();
 				return false;
 			});
-			controls.navLinks.find('a').on( 'click.'+name, function(){
+			
+			var navLinks = controls.navLinks.find('a').length ? controls.navLinks.find('a') : controls.navLinks;
+			navLinks.on( 'click.'+name, function(){
 				data.loopDir = 0;
 				P.showSlide( P.controls.navLinks.children('a').index( $(this) ) );
 				return false
