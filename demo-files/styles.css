@@ -25,9 +25,15 @@ a {
 a:hover {
 	color: #39C;
 }
+hr {
+	border: none;
+	border-bottom: 1px solid #CCC;
+	margin: 20px 0;
+}
 .wrapper {
-	max-width: 380px;
+	max-width: 640px;
 	margin: 0 auto;
+	padding: 0 20px;
 }
 
 .cf:before,
@@ -67,28 +73,28 @@ a:hover {
 
 
 /* --- Controls --- */
-.coolSlider-controls {
+#controls {
 	margin: 0 0 15px;
 	overflow: hidden;
 }
-.coolSlider-controls h3 {
+#controls h3 {
 	margin: 0;
 	line-height: 1;
 }
-.coolSlider-controls p {
+#controls p {
 	margin: 0 0 10px;
 }
-.coolSlider-controls ul,
-.coolSlider-controls ol {
+#controls ul,
+#controls ol {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	float: left;
 }
-.coolSlider-controls li {
+#controls li {
 	float: left;
 }
-.coolSlider-controls li a {
+#controls li a {
 	display: block;
 	min-width: 10px;
 	padding: 0 5px;
@@ -98,37 +104,27 @@ a:hover {
 	color: #333;
 	background: #DDD;
 }
-.coolSlider-controls li a span {
+#controls li a span {
 	display: none;
 }
-
-.coolSlider-controls-play {
-	display: none;
-}
-.coolSlider-controls-play.paused {
-	display: list-item;
-}
-.coolSlider-controls-pause.paused {
-	display: none;
-}
-
-.coolSlider-controls li a:hover,
-.coolSlider-controls li.selected a {
+#controls li a:hover,
+#controls li.selected a {
 	color: white;
 	background: #069;
 }
-.coolSlider-controls li.disabled a {
+#controls li.disabled a {
 	color: #333;
 	background: #DDD;
 	cursor: default;
 	opacity: .25;
 }
 
+.play { display: none }
+.play.paused { display: list-item }
+.pause.paused { display: none }
 
-/* --- Test Div and Visual Timer --- */
-#test {
-	color: #900;
-}
+
+/* --- Visual Timer --- */
 #timer {
 	position: relative;
 	z-index: 1;

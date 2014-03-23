@@ -1,5 +1,5 @@
 /*!
- * coolSlider v1.05
+ * coolSlider v1.5
  * http://github.com/romanmz/coolSlider
  * By Roman Martinez - http://romanmz.com
  */
@@ -11,33 +11,38 @@
 	// ----- PRIVATE DATA -----
 	var name = 'coolSlider';
 	var defaults = {
-		type: 'fade',			// 'fade', 'scroll'
+		
+		type: 'fade',			// 'fade' or 'scroll'
+		swipe: 'scroll',		// false or 'scroll'
 		slides: '> *',			// css selector
 		timer: 8000,			// milliseconds (time before changing slides when autoplay is on)
 		speed: 500,				// milliseconds (speed of transition between slides)
-		showFirst: 1,	// number or 'random'
-		visualTimer: false,		// false or css selector
+		showFirst: 1,			// number or 'random'
 		
 		loop: false,			// true or false
 		autoplay: false,		// true or false
 		keyboard: true,			// true or false
-		swipe: 'scroll',		// false or 'scroll'
 		fixHeight: false,		// true or false (for better results, load the "imagesLoaded" plugin)
 		
+		// Class Names
 		selectedSlideClass: 'selected',
 		previousSlideClass: 'previous',
 		controlsDisabledClass: 'disabled',
 		controlsPausedClass: 'paused',
 		controlsSelectedClass: 'selected',
 		
-		addControls: true,		// true, false, 'before', 'after', 'prepend', 'append', css selector (true defaults to 'before')
-		controls: '<div class="coolSlider-controls"><h3>Slideshow controls</h3><p>Currently showing slide {{current}} of {{total}}</p/><ul>{{prevLink}}{{playLink}}{{pauseLink}}{{nextLink}}</ul><ol>{{navLinks}}</ol></div>',
-		prevLink: '<li class="coolSlider-controls-prev"><a href="#">&laquo;<span class="default-text"> Previous slide</span><span class="alt-text"> Showing first slide</span></a></li>',
-		nextLink: '<li class="coolSlider-controls-next"><a href="#"><span class="default-text">Next slide </span><span class="alt-text">Showing last slide </span>&raquo;</a></li>',
-		playLink: '<li class="coolSlider-controls-play"><a href="#">▶<span> Play slideshow</span></a></li>',
-		pauseLink: '<li class="coolSlider-controls-pause"><a href="#">■<span> Pause slideshow</span></a></li>',
-		navLinks: '<li class="coolSlider-controls-number"><a href="#"><span class="default-text">Show slide </span><span class="alt-text">Showing slide </span>{{title}}</a></li>',
+		// Controls Selectors
+		prev:		'',
+		next:		'',
+		play:		'',
+		pause:		'',
+		links:		'',
+		linksNumber:'',
+		current:	'',
+		total:		'',
+		visualTimer:'',
 		
+		// Callbacks
 		init: function(){},
 		slidestart: function(){},
 		slideend: function(){},
@@ -128,11 +133,11 @@
 				forced: false,
 				speed: options.speed,
 				playing: options.autoplay,
-				touch: ('ontouchstart' in window || navigator.msMaxTouchPoints > 0),
+				touch: (options.swipe && ('ontouchstart' in window || navigator.msMaxTouchPoints > 0) ),
 				selectedSlide: $(),
 				previousSlide: $(),
 				otherSlides: $(),
-				visualTimer: (options.visualTimer) ? $(options.visualTimer) : $(),
+				visualTimer: $(options.visualTimer),
 				csstransforms3d: (typeof Modernizr!='undefined' && Modernizr.csstransforms3d) || hasTransforms3d(),
 				csstransitions: (typeof Modernizr!='undefined' && Modernizr.csstransitions) || hasTransitions()
 			};
@@ -152,34 +157,38 @@
 			// Support touch events
 			P.addTouchEvents();
 			
-			// Get type of slider and initialize it
-			type = (data.touch && typeof options.swipe == 'string') ? options.swipe : options.type;
+			// Get selected type of slider, if not found, use default
+			type = (data.touch) ? options.swipe : options.type;
 			if( typeof type === 'string' && typeof $.fn[name].transitions[type] === 'function' ) {
 				type = $.fn[name].transitions[type];
-			} else if( typeof type !== 'function' ) {
-				$.error( name+'(): type of slider is not defined' );
+			}
+			if( typeof type !== 'function' ) {
+				type = $.fn[name].transitions[defaults.type];
 			}
 			type.call( P, element, slides, options, data );
 			
 			// Run other initializers
 			options.init.call( P, element, slides, options, data );
-			P.createControls();
+			P.initControls();
 			P.showSlide( options.showFirst-1, 0 );
 			
-			// Fix Slides Heighs with Javascript
+			// Fix Slides Size with Javascript
 			if( options.fixHeight ) {
-				function fixHeight() {
+				function fixSize() {
+					
+					// Check height
 					var maxH = 0;
 					slides.height('').each(function(){
 						maxH = Math.max( maxH, $(this).height() );
 					}).height( maxH );
+					
 				}
-				fixHeight();
-				setTimeout( fixHeight, 500 );
-				$(window).on( 'load.'+name, fixHeight );
-				$(window).on( 'resize.'+name, fixHeight );
+				fixSize();
+				setTimeout( fixSize, 500 );
+				$(window).on( 'load.'+name, fixSize );
+				$(window).on( 'resize.'+name, fixSize );
 				if( typeof $.fn.imagesLoaded == 'function' ) {
-					slides.imagesLoaded().progress( fixHeight );
+					slides.imagesLoaded().progress( fixSize );
 				}
 			}
 			
@@ -280,106 +289,74 @@
 		
 		
 		
-		// ----- CREATE CONTROLS -----
-		createControls: function() {
+		// ----- INIT CONTROLS -----
+		initControls: function() {
 			
-			// Validate
-			if( this.controls || !this.options.addControls ) {
+			// Exit if controls are already defined
+			if( this.controls ) {
 				return;
 			}
 			
 			// Set vars
 			var P = this, options = P.options, data = P.data;
-			var templates = { controls:'', prevLink:'', nextLink:'', playLink:'', pauseLink:'', navLinks:'' };
-			var controls;
-			var navLinks;
+			var controls = P.controls = $();
+			var links = $( options.links );
 			
-			// Markup variables
-			for( var key in templates ) {
-				var string = typeof options[key] == 'string' ? options[key] : '';
-				templates[key] = string.replace( /\{\{([^}]+)\}\}/g, '<span data-replace-with="$1">$1</span>' );
-			}
-			P.controls = controls = $( templates.controls );
-			
-			// Insert into DOM
-			switch( options.addControls ) {
-				case true:
-					options.addControls = 'before';
-				case 'before':
-				case 'after':
-				case 'prepend':
-				case 'append':
-					P.element[options.addControls]( controls );
-					break;
-				default:
-					$( options.addControls ).append( controls );
-					break;
-			}
-			
-			// Create controls
-			for( var key in templates ) {
-				switch( key ) {
-					case 'prevLink': case 'nextLink': case 'playLink': case 'pauseLink':
-						controls[key] = $( templates[key] );
-						var replaceThis = controls.filter( '[data-replace-with="'+key+'"]' );
-						if( !replaceThis.length ) {
-							replaceThis = controls.find( '[data-replace-with="'+key+'"]' );
-						}
-						replaceThis.replaceWith( controls[key] );
-						break;
-				}
-			}
-			if( !data.playing ) {
-				controls.playLink.addClass( options.controlsPausedClass );
-				controls.pauseLink.addClass( options.controlsPausedClass );
-			}
+			// Select Objects
+			controls.prev = $( options.prev );
+			controls.next = $( options.next );
+			controls.play = $( options.play );
+			controls.pause = $( options.pause );
+			controls.links = $();
+			controls.current = $( options.current );
+			controls.total = $( options.total );
 			
 			// Create numbered navigation
-			navLinks = $();
-			for( var i=1; i<=data.total; i++ ) {
-				var navLink = $( templates['navLinks'] );
-				var title = P.slides.eq( i-1 ).data( 'slide-title' );
-				if( !title ) title = i;
-				navLink.find( '[data-replace-with=title]' ).text( title ).contents().unwrap();
-				navLink.find( '[data-replace-with=number]' ).text( i ).contents().unwrap();
-				navLinks = navLinks.add( navLink );
+			for( var i=0; i<data.total; i++ ) {
+				var thisLink = links.eq(i);
+				if( !thisLink.length ) {
+					thisLink = links.last().clone().insertAfter( links.last() );
+					links = links.add( thisLink );
+				}
+				
+				// Add correct number
+				var title = P.slides.eq(i).data( 'slide-title' );
+				if( !title ) title = i+1;
+				thisLink.find( options.linksNumber ).text( title );
+				
+				// Add to links list
+				controls.links = controls.links.add( thisLink );
 			}
-			controls.find( '[data-replace-with="navLinks"]' ).replaceWith( navLinks );
-			controls.navLinks = navLinks;
 			
-			// Bind events listeners
+			// Add controlsPausedClass if necessary
+			if( !data.playing ) {
+				controls.play.addClass( options.controlsPausedClass );
+				controls.pause.addClass( options.controlsPausedClass );
+			}
+			
+			// Bind event listeners
 			P.element.on( 'slidestart.'+name, function(){
 				P.updateControls();
 			});
-			
-			var prevLink = controls.prevLink.find('a').length ? controls.prevLink.find('a') : controls.prevLink;
-			prevLink.on( 'click.'+name, function(){
+			controls.prev.on( 'click.'+name, function(){
 				P.showPrevious();
 				return false;
 			});
-			
-			var nextLink = controls.nextLink.find('a').length ? controls.nextLink.find('a') : controls.nextLink;
-			nextLink.on( 'click.'+name, function(){
+			controls.next.on( 'click.'+name, function(){
 				P.showNext();
 				return false;
 			});
-			
-			var playLink = controls.playLink.find('a').length ? controls.playLink.find('a') : controls.playLink;
-			playLink.on( 'click.'+name, function(){
+			controls.play.on( 'click.'+name, function(){
 				P.playSlides();
 				return false;
 			});
-			
-			var pauseLink = controls.pauseLink.find('a').length ? controls.pauseLink.find('a') : controls.pauseLink;
-			pauseLink.on( 'click.'+name, function(){
+			controls.pause.on( 'click.'+name, function(){
 				P.stopSlides();
 				return false;
 			});
-			
-			var navLinks = controls.navLinks.find('a').length ? controls.navLinks.find('a') : controls.navLinks;
-			navLinks.on( 'click.'+name, function(){
+			controls.links.on( 'click.'+name, function(){
 				data.loopDir = 0;
-				P.showSlide( P.controls.navLinks.children('a').index( $(this) ) );
+				P.showSlide( P.controls.links.index( $(this) ) );
 				return false
 			});
 			
@@ -390,14 +367,15 @@
 			
 			// Reset Prev/Next
 			var prevClass = (options.loop || data.selected > 0) ? 'removeClass' : 'addClass';
-			controls.prevLink[prevClass]( options.controlsDisabledClass );
+			controls.prev[prevClass]( options.controlsDisabledClass );
 			var nextClass = (options.loop || data.selected < data.total-1) ? 'removeClass' : 'addClass';
-			controls.nextLink[nextClass]( options.controlsDisabledClass );
+			controls.next[nextClass]( options.controlsDisabledClass );
 			
 			// Reset Numbers
-			controls.navLinks.removeClass( options.controlsSelectedClass ).eq( data.selected ).addClass( options.controlsSelectedClass );
-			controls.find('[data-replace-with=current]').text( data.selected+1 );
-			controls.find('[data-replace-with=total]').text( data.total );
+			controls.links.removeClass( options.controlsSelectedClass )
+				.eq( data.selected ).addClass( options.controlsSelectedClass );
+			controls.current.text( data.selected+1 );
+			controls.total.text( data.total );
 			
 		},
 		
@@ -475,8 +453,8 @@
 			
 			var P = this, data = P.data, controls = P.controls, options = P.options;
 			if( controls ) {
-				controls.playLink.addClass( options.controlsPausedClass );
-				controls.pauseLink.addClass( options.controlsPausedClass );
+				controls.play.addClass( options.controlsPausedClass );
+				controls.pause.addClass( options.controlsPausedClass );
 			}
 			data.playing = false;
 			data.forced = true;
@@ -487,8 +465,8 @@
 			
 			var P = this, data = P.data, controls = P.controls, options = P.options;
 			if( controls ) {
-				controls.playLink.removeClass( options.controlsPausedClass );
-				controls.pauseLink.removeClass( options.controlsPausedClass );
+				controls.play.removeClass( options.controlsPausedClass );
+				controls.pause.removeClass( options.controlsPausedClass );
 			}
 			data.playing = true;
 			data.visualTimer.stop(true,false).css({ marginLeft:0 }).animate({ width:'100%' },{ duration:options.timer });
@@ -564,8 +542,7 @@
 			var allSlides = slides;
 			var allTotal = allSlides.length;
 			var outOfRange = false;
-			var useTouch = ( options.swipe && data.touch );
-			var loop = ( options.loop && !useTouch );
+			var loop = ( options.loop && !data.touch );
 			var touchData = data.touchData;
 			
 			// Duplicate slides for loops
@@ -581,14 +558,16 @@
 				element.css( 'position', 'relative' );
 			}
 			slider.css({ position:'relative', left:0, top:0, width:( allTotal * 100 )+'%' });
-			allSlides.css({ float:'left', width:( 100 / allTotal )+'%' });
+			var slidesWidth = ( 100 / allTotal ).toFixed( 2 );
+			allSlides.css({ float:'left', width:slidesWidth+'%' });
+			
 			
 			// Function to move the slider
 			function transitionTo( target, speed ) {
 				var left;
 				if( data.csstransforms3d && data.csstransitions ) {
 					left = ( target / allTotal * -100 ) + '%';
-					var translate = (useTouch) ? 'translate3d('+left+',0,0)' : 'translateX('+left+')';
+					var translate = (data.touch) ? 'translate3d('+left+',0,0)' : 'translateX('+left+')';
 					slider.css({ 'transform':translate, 'transition-duration':speed+'ms' });
 				} else {
 					left = ( target * -100 ) + '%';
@@ -619,35 +598,32 @@
 					transitionTo( target, 0 );
 				}
 				
+			})
+			.on( 'touchstart.'+name, function(){
+				
+				P.stopSlides();
+				
+			})
+			.on( 'touchmove.'+name, function(){
+				
+				if( !touchData.isVertical ) {
+					var target = data.selected + ( touchData.swipeX / -touchData.resistance );
+					transitionTo( target, 0 );
+				}
+				
+			})
+			.on( 'swipesuccess.'+name, function(){
+				
+				var direction = (touchData.deltaX < 0) ? 1 : -1;
+				data.forced = true;
+				P.showSlide( data.selected + direction, options.speed );
+				
+			})
+			.on( 'swipefail.'+name, function(){
+				
+				transitionTo( data.selected, options.speed );
+				
 			});
-			if( useTouch ) {
-				element
-				.on( 'touchstart.'+name, function(){
-					
-					P.stopSlides();
-					
-				})
-				.on( 'touchmove.'+name, function(){
-					
-					if( !touchData.isVertical ) {
-						var target = data.selected + ( touchData.swipeX / -touchData.resistance );
-						transitionTo( target, 0 );
-					}
-					
-				})
-				.on( 'swipesuccess.'+name, function(){
-					
-					var direction = (touchData.deltaX < 0) ? 1 : -1;
-					data.forced = true;
-					P.showSlide( data.selected + direction, options.speed );
-					
-				})
-				.on( 'swipefail.'+name, function(){
-					
-					transitionTo( data.selected, options.speed );
-					
-				})
-			}
 		}
 	};
 	
