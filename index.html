@@ -14,8 +14,8 @@
 			
 			$('#slideshow').coolSlider({
 				
-				type: 'fade',			// 'fade' or 'scroll'
-				swipe: 'scroll',		// false or 'scroll'
+				type: 'scroll',			// 'fade' or 'scroll'
+				swipe: 'scroll',		// false, 'fade' or 'scroll'
 				slides: '> *',			// css selector
 				timer: 8000,			// milliseconds (time before changing slides when autoplay is on)
 				speed: 500,				// milliseconds (speed of transition between slides)
@@ -24,7 +24,7 @@
 				loop: false,			// true or false
 				autoplay: false,		// true or false
 				keyboard: true,			// true or false
-				fixHeight: true,		// true or false (for better results, load the "imagesLoaded" plugin)
+				fixHeight: false,		// true or false (for better results, load the "imagesLoaded" plugin)
 				
 				// Class Names
 				selectedSlideClass: 'selected',

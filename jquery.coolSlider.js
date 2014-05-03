@@ -1,5 +1,5 @@
 /*!
- * coolSlider v1.5
+ * coolSlider v1.6
  * http://github.com/romanmz/coolSlider
  * By Roman Martinez - http://romanmz.com
  */
@@ -13,7 +13,7 @@
 	var defaults = {
 		
 		type: 'fade',			// 'fade' or 'scroll'
-		swipe: 'scroll',		// false or 'scroll'
+		swipe: 'scroll',		// false, 'fade' or 'scroll'
 		slides: '> *',			// css selector
 		timer: 8000,			// milliseconds (time before changing slides when autoplay is on)
 		speed: 500,				// milliseconds (speed of transition between slides)
@@ -221,6 +221,7 @@
 				touchData.isVertical = undefined;
 				touchData.width = element.innerWidth();
 				touchData.swipeX = 0;
+				touchData.direction = 0;
 				// Callback
 				options.touchstart.call( P, element, slides, options, data );
 			})
@@ -254,6 +255,7 @@
 					touchData.resistance = Math.abs( touchData.deltaX ) / touchData.width + 2;
 				}
 				touchData.swipeX = touchData.deltaX / touchData.width;
+				touchData.direction = (touchData.deltaX < 0) ? 1 : -1;
 				
 				// Cancel default action
 				e.preventDefault();
@@ -382,17 +384,21 @@
 		
 		
 		// ----- SLIDING FUNCTIONS -----
+		// Limit range
+		limitRange: function( number ) {
+			var last = this.data.total-1;
+			var loop = this.options.loop;
+			return (number>last) ? (loop) ? 0 : last : (number<0) ? (loop) ? last : 0 : number;
+		},
 		showSlide: function( number, speed ) {
 			
 			var P = this, element = P.element, slides = P.slides, data = P.data, options = P.options;
-			var loop = options.loop;
-			var last = data.total-1;
 			
 			// Defaults
 			if( typeof speed === 'undefined' ) speed = options.speed;
 			
 			// Validate
-			number = (number>last) ? (loop) ? 0 : last : (number<0) ? (loop) ? last : 0 : number;
+			number = P.limitRange( number );
 			if( !data.forced && (data.moving || number==data.selected) ) {
 				return;
 			}
@@ -507,8 +513,11 @@
 		fade: function( element, slides, options, data ) {
 			
 			// Create vars
-			var container = this.createContainer();
+			var P = this;
+			var container = P.createContainer();
 			var slideWidth = 100 / data.total;
+			var touchData = data.touchData;
+			var timer;
 			
 			// Setup styles
 			element.css({ overflow:'hidden' });
@@ -517,18 +526,52 @@
 				$(this).css({ left: slideWidth*-i+'%' });
 			});
 			
+			// Calculate Transitions
+			function transitionTo( target1, target2, ratio, speed ) {
+				
+				if( speed==0 ) {
+					target1.css({ opacity:ratio });
+					target2.not(target1).css({ opacity:1-ratio });
+				} else {
+					target1.fadeTo( speed, ratio );
+					timer = setTimeout(function(){
+						target2.not(target1).fadeTo( speed/2, 1-ratio );
+					}, speed/2 );
+				}
+				
+			}
+			
 			// Bind events listeners
 			element
 			.on( 'slidestart.'+name, function(){
-				data.selectedSlide.css({ zIndex:1, visibility:'visible' }).fadeTo( data.speed, 1 );
-				setTimeout(function(){
-					data.previousSlide.fadeTo( data.speed/2, 0 );
-				}, data.speed/2 );
+				data.selectedSlide.css({ visibility:'visible', zIndex:1 });
+				transitionTo( data.selectedSlide, data.previousSlide, 1, data.speed );
 			})
 			.on( 'slideend.'+name, function(){
 				data.selectedSlide.css({ zIndex:0 });
-				data.previousSlide.css({ visibility:'hidden' });
+				slides.not( data.selectedSlide ).css({ zIndex:0, visibility:'hidden', opacity:0 });
+			})
+			.on( 'touchstart.'+name, function(){
+				P.stopSlides();
+			})
+			.on( 'touchmove.'+name, function(){
+				if( !touchData.isVertical ) {
+					var target1 = slides.eq( data.selected );
+					var target2 = slides.eq( P.limitRange( data.selected+touchData.direction, 0, data.total-1 ) );
+					var ratio = 1-( touchData.swipeX * -touchData.direction );
+					target2.css({ visibility:'visible', zIndex:1 });
+					transitionTo( target1, target2, ratio, 0 );
+				}
+			})
+			.on( 'swipesuccess.'+name, function(){
+				data.forced = true;
+				P.showSlide( data.selected + touchData.direction, options.speed );
+			})
+			.on( 'swipefail.'+name, function(){
+				data.forced = true;
+				P.showSlide( data.selected, options.speed );
 			});
+			
 		},
 		
 		
@@ -578,7 +621,6 @@
 			// Bind events listeners
 			element
 			.on( 'slidestart.'+name, function(){
-				
 				var target = data.selected;
 				outOfRange = false;
 				if( loop ) {
@@ -589,40 +631,28 @@
 					}
 				}
 				transitionTo( target, data.speed )
-				
 			})
 			.on( 'slideend.'+name, function(){
-				
 				if( loop && outOfRange ) {
 					var target = data.selected + data.total;
 					transitionTo( target, 0 );
 				}
-				
 			})
 			.on( 'touchstart.'+name, function(){
-				
 				P.stopSlides();
-				
 			})
 			.on( 'touchmove.'+name, function(){
-				
 				if( !touchData.isVertical ) {
 					var target = data.selected + ( touchData.swipeX / -touchData.resistance );
 					transitionTo( target, 0 );
 				}
-				
 			})
 			.on( 'swipesuccess.'+name, function(){
-				
-				var direction = (touchData.deltaX < 0) ? 1 : -1;
 				data.forced = true;
-				P.showSlide( data.selected + direction, options.speed );
-				
+				P.showSlide( data.selected + touchData.direction, options.speed );
 			})
 			.on( 'swipefail.'+name, function(){
-				
 				transitionTo( data.selected, options.speed );
-				
 			});
 		}
 	};
