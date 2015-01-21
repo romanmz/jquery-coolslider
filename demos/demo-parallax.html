@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>coolslider demo: scroll 1</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+	<link href="styles.css" rel="stylesheet">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../jquery.coolslider.js"></script>
+	<script>
+		$(document).ready(function(){
+			
+			var Slider = $( '#slider' );
+			var Debug = $( '#debug' );
+			var Spheres = Slider.find( '.sphere' );
+			
+			Slider.
+			on( 'touchstart', function(){
+				//
+			}).
+			on( 'touchmove', function(e){
+				var w    = $(window).width();
+				var top  = e.originalEvent.touches[0].pageY;
+				var left = w - e.originalEvent.touches[0].pageX;
+				Spheres.css({ transition:'none' }).offset({ left:left, top:top });
+			}).
+			on( 'touchend', function(){
+				Spheres.css({ transition:'', left:'', top:'' });
+			});
+			
+			
+			Slider.coolslider({
+				type:		'scroll',
+				swipe:		true,
+				slides:		'.slide',
+				timer:		8000,
+				speed:		500,
+				showFirst:	1,
+				loop:		false,
+				autoplay:	false,
+				keyboard:	true,
+				fixHeight:	false,
+				classSelected:		'selected',
+				classAutoplaying:	'autoplaying',
+				classTransitioning:	'transitioning',
+				classDisabled:		'disabled',
+				prev:		'#controls .prev',
+				next:		'#controls .next',
+				play:		'#controls .play',
+				stop:		'#controls .stop',
+				links:		'#controls .link',
+				linksTitle:	'.title',
+				current:	'#controls .current',
+				total:		'#controls .total'
+			})
+			
+			
+			
+		});
+	</script>
+	<style>
+		#debug {
+			background: #CCC;
+		}
+		#slider {
+			overflow: hidden;
+		}
+		.slide {
+			position: relative;
+		}
+		.sphere {
+			position: absolute;
+			top:      50%;
+			left:     50%;
+			margin:   -20px;
+			width:    40px;
+			height:   40px;
+			
+			border-radius: 100%;
+			background: white;
+			transition: all 1s;
+		}
+	</style>
+</head>
+<body>
+
+
+
+<div class="container">
+<div class="wrapper">
+
+	
+	<div id="controls">
+		<p>Currently showing slide <span class="current">1</span> of <span class="total">total</span></p>
+		<ul>
+			<li class="prev"><a href="#">&laquo;</a></li>
+			<li class="play"><a href="#">▶</a></li>
+			<li class="stop"><a href="#">■</a></li>
+			<li class="next"><a href="#">&raquo;</a></li>
+		</ul>
+		<ol>
+			<li class="link"><a href="#" class="title">number</a></li>
+		</ol>
+	</div>
+	
+	
+	<div id="slider" class="cf">
+		<div class="timer">
+			<div class="progress"></div>
+		</div>
+		<div class="slide slide-1">
+			<a href="#1">
+				<div class="sphere"></div>
+				<img alt="" src="images/image1.jpg">
+				<div class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+			</a>
+		</div>
+		<div class="slide slide-2">
+			<a href="#2">
+				<div class="sphere"></div>
+				<img alt="" src="images/image2.jpg">
+				<div class="caption">Integer sit amet gravida urna. In nec commodo felis.</div>
+			</a>
+		</div>
+		<div class="slide slide-3">
+			<a href="#3">
+				<div class="sphere"></div>
+				<img alt="" src="images/image3.jpg">
+				<div class="caption">Fusce eu risus tristique, varius massa ac, malesuada diamt.</div>
+			</a>
+		</div>
+	</div>
+	
+	
+	<div id="debug">&nbsp;</div>
+
+
+</div>
+</div>
+
+
+
+</body>
+</html>

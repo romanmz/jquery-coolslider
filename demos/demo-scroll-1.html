@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>coolslider demo: scroll 1</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+	<link href="styles.css" rel="stylesheet">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../jquery.coolslider.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			
+			$('#slider').coolslider({
+				type:		'scroll',
+				swipe:		true,
+				slides:		'.slide',
+				timer:		8000,
+				speed:		500,
+				showFirst:	1,
+				loop:		false,
+				autoplay:	false,
+				keyboard:	true,
+				fixHeight:	false,
+				classSelected:		'selected',
+				classAutoplaying:	'autoplaying',
+				classTransitioning:	'transitioning',
+				classDisabled:		'disabled',
+				prev:		'#controls .prev',
+				next:		'#controls .next',
+				play:		'#controls .play',
+				stop:		'#controls .stop',
+				links:		'#controls .link',
+				linksTitle:	'.title',
+				current:	'#controls .current',
+				total:		'#controls .total'
+			});
+			
+		});
+	</script>
+	<style>
+		#slider {
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+
+
+
+<div class="container">
+<div class="wrapper">
+
+	
+	<div id="controls">
+		<p>Currently showing slide <span class="current">1</span> of <span class="total">total</span></p>
+		<ul>
+			<li class="prev"><a href="#">&laquo;</a></li>
+			<li class="play"><a href="#">▶</a></li>
+			<li class="stop"><a href="#">■</a></li>
+			<li class="next"><a href="#">&raquo;</a></li>
+		</ul>
+		<ol>
+			<li class="link"><a href="#" class="title">number</a></li>
+		</ol>
+	</div>
+	
+	
+	<div id="slider" class="cf">
+		<div class="timer">
+			<div class="progress"></div>
+		</div>
+		<div class="slide">
+			<a href="#1">
+				<img alt="" src="images/image1.jpg">
+				<div class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+			</a>
+		</div>
+		<div class="slide">
+			<a href="#2">
+				<img alt="" src="images/image2.jpg">
+				<div class="caption">Integer sit amet gravida urna. In nec commodo felis.</div>
+			</a>
+		</div>
+		<div class="slide">
+			<a href="#3">
+				<img alt="" src="images/image3.jpg">
+				<div class="caption">Fusce eu risus tristique, varius massa ac, malesuada diamt.</div>
+			</a>
+		</div>
+	</div>
+
+
+</div>
+</div>
+
+
+
+</body>
+</html>
