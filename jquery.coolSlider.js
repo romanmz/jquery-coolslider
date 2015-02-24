@@ -1,5 +1,5 @@
 /*
- * coolslider v2.0.5
+ * coolslider v2.1
  * http://github.com/romanmz/coolslider
  * By Roman Martinez - http://romanmz.com
  */
@@ -726,40 +726,42 @@
 		scroll: function( slider, slides, settings, data ) {
 			
 			// -- Init
-			var P = this, touchData = P.touchData;
-			var wrapper = P._getWrapper();
-			var allSlides = slides;
-			var allTotal = allSlides.length;
-			var outOfRange = false;
-			var loop = ( settings.loop && !data.isTouch );
-			var clones1 = $();
-			var clones2 = $();
+			var P = this
+			var touchData = P.touchData;
+			var loop = ( settings.loop );
 			var resistance = 1;
+			var allSlides = slides;
 			
 			// -- Clone Slides
+			var clonesOffset = 0;
 			if( loop ) {
-				clones1 = slides.clone().prependTo( wrapper );
-				clones2 = slides.clone().appendTo( wrapper );
-				allSlides = allSlides.add( clones1 ).add( clones2 );
-				allTotal = allSlides.length;
+				var clones1 = slides.clone().prependTo( slider );
+				var clones2 = slides.clone().appendTo( slider );
+				allSlides = clones1.add( slides ).add( clones2 );
+				clonesOffset = -slides.length;
 			}
+			
+			// -- Create invisible placeholder
+			var placeholder = $('<div>').css({ overflow:'hidden', visibility:'hidden', opacity:0 });
+			var placeholderInner = $('<div>').css({ width: ( slides.length * 100 )+'%' });
+			var placeholderSlides = slides.clone().css({ width: ( Math.floor( 100 / slides.length * 100 ) / 100 ) +'%', float: 'left' });
+			slider.prepend( placeholder.append( placeholderInner.append( placeholderSlides ) ) );
 			
 			// -- Setup Styles
 			if( slider.css( 'position' ) == 'static' )
 				slider.css( 'position', 'relative' );
-			wrapper.css({ position:'relative', left:0, top:0, overflow:'hidden', width:( allTotal * 100 )+'%' });
-			allSlides.css({ float:'left', width:( 100 / allTotal ).toFixed( 2 )+'%' });
+			allSlides
+				.css({ position:'absolute', top:0, width:'100%', height:'100%' })
+				.each(function(i){ $(this).css( 'left', ( ( i + clonesOffset ) * 100 )+'%' ) });
+			
 			
 			// -- Transition Function
 			function transitionTo( target, speed ) {
-				var left;
+				var left = ( target * -100 )+'%';
 				if( data.hasTransforms3D && data.hasTransitions ) {
-					left = ( target / allTotal * -100 ) + '%';
-					var translate = (data.isTouch) ? 'translate3d('+left+',0,0)' : 'translateX('+left+')';
-					wrapper.css({ 'transform':translate, 'transition-duration':speed+'ms' });
+					allSlides.css({ transform: 'translate3d('+left+',0,0)', 'transition':'all '+speed+'ms' });
 				} else {
-					left = ( target * -100 ) + '%';
-					wrapper.stop( true, true ).animate({ left:left },{ duration:speed });
+					allSlides.animate({ marginLeft: left }, speed );
 				}
 			}
 			
@@ -767,30 +769,37 @@
 			// -- Slidestart
 			.on( 'slidestart.'+name, function(){
 				var target = data.selected;
+				
 				// Loop
 				outOfRange = false;
 				if( loop ) {
-					target += data.total;
 					if( (data.selected - data.previous) * data.loopDirection < 0 ) {
 						target += data.total * data.loopDirection;
 						outOfRange = true;
 					}
+					
 					// Update classes of cloned slides
 					var offset = data.total;
 					if( outOfRange )
 						offset += data.total * data.loopDirection;
 					P._updateClasses( allSlides, offset );
+					
 				}
-				transitionTo( target, data.speed )
+				
+				transitionTo( target, data.speed );
 			})
 			
 			// -- Slideend
 			.on( 'slideend.'+name, function(){
+				
+				allSlides.not( slides.eq( data.selected ) )
+					.css({ transition:'none' });
+				
 				if( loop && outOfRange ) {
-					var target = data.selected + data.total;
-					transitionTo( target, 0 );
+					transitionTo( data.selected, 0 );
 					P._updateClasses( allSlides, data.total );
 				}
+				
 			})
 			
 			if( data.isTouch ) {
@@ -807,13 +816,13 @@
 					e = e.originalEvent;
 					if( touchData.direction=='x' ) {
 						// Add resistance
-						if(
-							( data.selected <= 0 && touchData.deltaX > 0 ) ||
-							( data.selected >= data.total-1 && touchData.deltaX < 0 )
+						if( !loop && (
+								( data.selected <= 0 && touchData.deltaX > 0 ) ||
+								( data.selected >= data.total-1 && touchData.deltaX < 0 )
+							)
 						) {
 							resistance = Math.abs( touchData.deltaX ) / touchData.areaWidth + 2;
 						}
-						// Transition
 						var target = data.selected + ( touchData.ratioX / -resistance );
 						transitionTo( target, 0 );
 						e.preventDefault();
@@ -823,6 +832,7 @@
 				// -- Touchend
 				.on( 'touchend.'+name, function(){
 					if( touchData.swipedX ) {
+						data.loopDirection = touchData.directionX;
 						P.goTo( data.selected + touchData.directionX, settings.speed, true );
 					} else if( touchData.direction=='x' ) {
 						transitionTo( data.selected, settings.speed );
