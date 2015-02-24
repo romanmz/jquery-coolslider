@@ -1,5 +1,5 @@
 /*
- * coolslider v2.0
+ * coolslider v2.0.5
  * http://github.com/romanmz/coolslider
  * By Roman Martinez - http://romanmz.com
  */
@@ -501,8 +501,10 @@
 			// Update elements
 			elements.each(function(i){
 				var reference = P.data.selected + offset;
-				var thisPosition =  (i - reference == 0) ? '' : i - reference;
-				var thisClass = P.settings.classSelected + thisPosition;
+				if( i - reference == 0 )
+					var thisClass = P.settings.classSelected;
+				else
+					var thisClass = 'not-'+P.settings.classSelected+' '+P.settings.classSelected + (i - reference);
 				
 				$(this)
 					.removeClass( $(this).data( dataClass ) )
