@@ -1,5 +1,5 @@
 /*
- * coolslider v2.1
+ * coolslider v2.2
  * http://github.com/romanmz/coolslider
  * By Roman Martinez - http://romanmz.com
  */
@@ -78,16 +78,15 @@
 	
 	// ----- PLUGIN CONSTRUCTOR -----
 	window[name] = function( element, settings ) {
-		// Validate element
-		if( typeof element != 'string' && !(element instanceof HTMLElement) && !(element instanceof HTMLCollection) && !(element instanceof jQuery) )
-			element = null;
+		// Convert to jquery
+		element = $(element);
 		
 		// If there's an old API, destroy it
-		if( $(element).data(name) )
-			$(element).data(name).destroy();
+		if( element.data(name) )
+			element.data(name).destroy();
 		
 		// Store new slider and new API
-		this.slider = $(element).data(name,this);
+		this.slider = element.data(name,this);
 		
 		// Trigger init() if settings are set
 		if( typeof settings == 'object' )
@@ -735,8 +734,8 @@
 			// -- Clone Slides
 			var clonesOffset = 0;
 			if( loop ) {
-				var clones1 = slides.clone().prependTo( slider );
-				var clones2 = slides.clone().appendTo( slider );
+				var clones1 = slides.clone().insertBefore( slides.first() );
+				var clones2 = slides.clone().insertAfter( slides.last() );
 				allSlides = clones1.add( slides ).add( clones2 );
 				clonesOffset = -slides.length;
 			}
