@@ -9,7 +9,7 @@
 	
 	// ----- Private Data -----
 	var defaults = {
-		type:		'tabs',
+		type:		'fade',
 	};
 	
 	
@@ -90,6 +90,144 @@
 			.on( 'slideshowchangestart', showCurrent )
 			.on( 'slideshowdestroy', destroy );
 			
+		},
+		
+		
+		
+		// --------------------------------------------------
+		// Fade
+		// --------------------------------------------------
+		fade: function( API, settings, slider, slides, data ) {
+			
+			
+			// Init vars
+			var usingTouch		= ( typeof $.fn.addTouchEvents == 'function' && data.usingTouch );
+			var placeholder		= $();
+			var wrapper			= $();
+			var currentSlide	= $();
+			var otherSlides		= $();
+			var animationTimer;
+			var touchData;
+			
+			
+			// ----- Init / Destroy -----
+			function init(){
+				
+				// Select objects
+				placeholder = createPlaceholder( slides );
+				wrapper = slides.parent();
+				
+				// Setup styles
+				if( wrapper.css( 'position' ) == 'static' ) {
+					wrapper.css( 'position', 'relative' );
+				}
+				slides.css({
+					position:	'absolute',
+					left:		0,
+					top:		0,
+					right:		0,
+					bottom:		0,
+					transition:	'none',
+					
+					opacity:	0,
+					zIndex:		0,
+					display:	'none',
+				});
+				
+			}
+			function destroy(){
+				
+				placeholder.remove();
+				wrapper.removeAttr( 'style' );
+				slides.stop( true, true ).removeAttr( 'style' );
+				clearTimeout( animationTimer );
+				
+			}
+			
+			
+			// ----- Transitions -----
+			function transitionTo( slideIn, slideOut, ratio, speed ) {
+				
+				slides.stop( true, true );
+				if( !speed ) {
+					slideIn.css({ opacity:ratio });
+					slideOut.css({ opacity:1-ratio });
+				} else {
+					slideIn.fadeTo( speed, ratio );
+					animationTimer = setTimeout(function(){
+						slideOut.fadeTo( speed/2, 1-ratio );
+					}, speed/2 );
+				}
+				
+			}
+			function changeStart(){
+				
+				currentSlide	= slides.eq( data.current ).css({ zIndex: 1, display:'block' });
+				otherSlides		= slides.not( currentSlide ).css({ zIndex: 0 });
+				transitionTo( currentSlide, otherSlides, 1, data.speed );
+				
+			}
+			function changeEnd(){
+				
+				otherSlides.css({ display:'none' });
+				
+			}
+			
+			
+			// ----- Touch Events -----
+			if( usingTouch ) {
+				touchData = slider.addTouchEvents().data( 'touchdata' );
+				function touchStart(){
+					
+					API.stop();
+					
+				}
+				function touchMove(){
+					if( touchData.initDir == 'x' ) {
+						
+						var nextNumber	= API.restrictNumber( data.current - touchData.directionX );
+						var nextSlide	= slides.eq( nextNumber ).not( currentSlide );
+						if( nextSlide.length ) {
+							
+							var ratio = 1 - Math.abs( touchData.movedRelX );
+							nextSlide.css({ display:'block' });
+							transitionTo( currentSlide, nextSlide, ratio, 0 );
+							
+						}
+						e.preventDefault();
+						
+					}
+				}
+				function swipe(){
+					if( touchData.initDir == 'x' ) {
+						
+						API.showSlide( data.current - touchData.directionX );
+						
+					}
+				}
+				function swipeFail(){
+					if( touchData.initDir == 'x' ) {
+						
+						API.showSlide( data.current, undefined, undefined, true );
+						
+					}
+				}
+			}
+			
+			
+			// ----- Bind Functions -----
+			slider
+			.on( 'slideshowinit', init )
+			.on( 'slideshowdestroy', destroy )
+			.on( 'slideshowchangestart', changeStart )
+			.on( 'slideshowchangeend', changeEnd )
+			if( usingTouch ) {
+				slider
+				.on( 'touchstart', touchStart )
+				.on( 'touchmove', touchMove )
+				.on( 'swipe', swipe )
+				.on( 'swipefail', swipeFail );
+			}
 		},
 	};
 	
