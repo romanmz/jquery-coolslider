@@ -9,7 +9,7 @@
 	
 	// ----- Private Data -----
 	var defaults = {
-		type:		'fade',
+		type:	'scroll',
 	};
 	
 	
@@ -221,6 +221,174 @@
 			.on( 'slideshowdestroy', destroy )
 			.on( 'slideshowchangestart', changeStart )
 			.on( 'slideshowchangeend', changeEnd )
+			if( usingTouch ) {
+				slider
+				.on( 'touchstart', touchStart )
+				.on( 'touchmove', touchMove )
+				.on( 'swipe', swipe )
+				.on( 'swipefail', swipeFail );
+			}
+		},
+		
+		
+		
+		// --------------------------------------------------
+		// Scroll
+		// --------------------------------------------------
+		scroll: function( API, settings, slider, slides, data ) {
+			
+			
+			// Init vars
+			var usingTouch		= ( typeof $.fn.addTouchEvents == 'function' && data.usingTouch );
+			var hasTranslate3D	= detectTranslate3D();
+			var hasTransition	= detectTransition();
+			var placeholder		= $();
+			var wrapper			= $();
+			var clones1			= $();
+			var clones2			= $();
+			var allSlides		= slides;
+			var touchData;
+			var outOfRange;
+			var resistance;
+			
+			
+			// ----- Init / Destroy -----
+			function init(){
+				
+				// Select objects
+				placeholder = createPlaceholder( slides );
+				wrapper = slides.parent();
+				
+				// Create clones for looping
+				if( settings.loop ) {
+					clones1		= slides.clone().insertBefore( slides.first() );
+					clones2		= slides.clone().insertAfter( slides.last() );
+					allSlides	= clones1.add( slides ).add( clones2 );
+				}
+				
+				// Setup styles
+				if( wrapper.css( 'position' ) == 'static' ) {
+					wrapper.css( 'position', 'relative' );
+				}
+				allSlides.css({
+					position:	'absolute',
+					top:		0,
+					width:		'100%',
+					height:		'100%'
+				}).each(function(i){
+					var left = ( i - clones1.length ) * 100;
+					$(this).css( 'left', ( left )+'%' );
+				});
+				
+			}
+			function destroy(){
+				
+				placeholder.remove();
+				clones1.add( clones2 ).remove();
+				wrapper.removeAttr( 'style' );
+				slides.stop( true, true ).removeAttr( 'style' );
+				
+			}
+			
+			
+			// ----- Transitions -----
+			function transitionTo( target, speed ) {
+				
+				var left = ( target * -100 )+'%';
+				if( hasTranslate3D && hasTransition ) {
+					allSlides.css({
+						transform:		'translate3d('+left+',0,0)',
+						'transition':	'all '+speed+'ms'
+					});
+				} else {
+					allSlides.animate({ marginLeft: left }, speed );
+				}
+				
+			}
+			function changeStart(){
+				
+				var target = data.current;
+				outOfRange = false;
+				if(
+					settings.loop && (
+						( data.current > data.previous && data.isChanging < 0 ) ||
+						( data.current < data.previous && data.isChanging > 0 )
+					)
+				) {
+					target += data.total * data.isChanging;
+					outOfRange = true;
+				}
+				transitionTo( target, data.speed );
+				
+			}
+			function changeEnd(){
+				
+				allSlides.css({ transition:'none' });
+				if( outOfRange ) {
+					transitionTo( data.current, 0 );
+				}
+				
+			}
+			function updateClasses() {
+				
+				clones1.add( clones2 ).removeClass( settings.classSelected );
+				clones1.eq( data.current ).add( clones2.eq( data.current ) ).addClass( settings.classSelected );
+				
+			}
+			
+			
+			// ----- Touch Events -----
+			if( usingTouch ) {
+				touchData = slider.addTouchEvents().data( 'touchdata' );
+				function touchStart(){
+					
+					API.stop();
+					resistance = 1;
+					
+				}
+				function touchMove(){
+					if( touchData.initDir == 'x' ) {
+						
+						// Add resistance
+						if(
+							!settings.loop &&
+							(
+								( data.current <= 0 && touchData.movedX > 0 ) ||
+								( data.current >= data.total-1 && touchData.movedX < 0 )
+							)
+						) {
+							resistance = Math.abs( touchData.movedX ) / touchData.areaWidth + 2;
+						}
+						var target = data.current + ( touchData.movedRelX / -resistance );
+						transitionTo( target, 0 );
+						e.preventDefault();
+						
+					}
+				}
+				function swipe(){
+					if( touchData.initDir == 'x' ) {
+						
+						API.showSlide( data.current - touchData.directionX, settings.speed, -touchData.directionX, true );
+						
+					}
+				}
+				function swipeFail(){
+					if( touchData.initDir == 'x' ) {
+						
+						transitionTo( data.current, settings.speed );
+						
+					}
+				}
+			}
+			
+			
+			// ----- Bind Functions -----
+			slider
+			.on( 'slideshowinit', init )
+			.on( 'slideshowdestroy', destroy )
+			.on( 'slideshowchangestart', changeStart )
+			.on( 'slideshowchangeend', changeEnd )
+			.on( 'slideshowupdate', updateClasses )
 			if( usingTouch ) {
 				slider
 				.on( 'touchstart', touchStart )
