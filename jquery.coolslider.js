@@ -1,5 +1,5 @@
 /*
- * coolslider v3.0
+ * coolslider v3.01
  * http://github.com/romanmz/coolslider
  * By Roman Martinez - http://romanmz.com
  */
@@ -279,6 +279,7 @@
 					var left = ( i - clones1.length ) * 100;
 					$(this).css( 'left', ( left )+'%' );
 				});
+				clones1.add( clones2 ).attr( 'aria-hidden', 'true' );
 				
 			}
 			function destroy(){
@@ -297,8 +298,8 @@
 				var left = ( target * -100 )+'%';
 				if( hasTranslate3D && hasTransition ) {
 					allSlides.css({
-						transform:		'translate3d('+left+',0,0)',
-						'transition':	'all '+speed+'ms'
+						transform:	'translate3d('+left+',0,0)',
+						transition:	'all '+speed+'ms'
 					});
 				} else {
 					allSlides.animate({ marginLeft: left }, speed );
@@ -307,6 +308,7 @@
 			}
 			function changeStart(){
 				
+				// Calculate target
 				var target = data.current;
 				outOfRange = false;
 				if(
@@ -318,12 +320,15 @@
 					target += data.total * data.isChanging;
 					outOfRange = true;
 				}
+				
+				// Animate
+				allSlides.css({ visibility: 'visible' });
 				transitionTo( target, data.speed );
 				
 			}
 			function changeEnd(){
 				
-				allSlides.css({ transition:'none' });
+				allSlides.not( slides.eq( data.current ) ).css({ visibility: 'hidden' });
 				if( outOfRange ) {
 					transitionTo( data.current, 0 );
 				}
@@ -359,6 +364,9 @@
 						) {
 							resistance = Math.abs( touchData.movedX ) / touchData.areaWidth + 2;
 						}
+						
+						// Animate
+						allSlides.css({ visibility: 'visible' });
 						var target = data.current + ( touchData.movedRelX / -resistance );
 						transitionTo( target, 0 );
 						e.preventDefault();
