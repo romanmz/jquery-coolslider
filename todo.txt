@@ -1,0 +1,1 @@
+allow default links markup (e.g. icons for prev and next)

@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>coolslider Testing</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<link href="styles.css" rel="stylesheet">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../jquery.coolslider.pkgd.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			
+			// Init slider
+			var Slider = $('#slider');
+			Slider.coolslider({
+				
+				// For Accessibility:
+				type:			'scroll',
+				autoplay:		false,	// only true if there's a button to manually pause
+				timer:			8000,	// must be enough to read all the content comfortably
+				pauseOnFocus:	true,	// must be true
+				
+				// Others:
+				loop:			false,
+				controlsPrev:	'#slider-controls .prev',
+				controlsNext:	'#slider-controls .next',
+				controlsPlay:	'#slider-controls .play',
+				controlsItems:	'#slider-controls .item',
+				
+			});
+			
+			// Get data
+			var SliderAPI = Slider.data( 'slideshow' );
+			
+			// Animate timer
+			var Timer = $('.timer .progress');
+			Slider
+			.on( 'slideshowplay', function(){
+				Timer.stop().css({ left:0, width:0 }).animate({ width:'100%' },{ duration:SliderAPI.settings.timer });
+			})
+			.on( 'slideshowchangestart', function(){
+				Timer.stop().animate({ left:'100%', width:0 },{ duration:SliderAPI.data.speed });
+			})
+			.on( 'slideshowstop', function(){
+				Timer.stop().css({ left:0, width:0 });
+			});
+			
+			// Update counter
+			var Current = $('.current');
+			var Total = $('.total');
+			Slider.on( 'slideshowupdate', function(){
+				Current.text( SliderAPI.data.current+1 );
+				Total.text( SliderAPI.data.total );
+			});
+			
+			// Reset
+			$('.destroy').on( 'click', function(e){
+				SliderAPI[ SliderAPI.data ? 'destroy' : 'init' ]();
+				e.preventDefault()
+			});
+			
+		});
+	</script>
+</head>
+<body>
+
+
+
+<div class="container">
+<div class="wrapper">
+	
+	
+	<!-- CONTROLS -->
+	<div id="slider-controls" class="slider-ctrls-box clearfix">
+		<p class="slider-status">Showing slide
+			<span class="current">1</span>
+			of
+			<span class="total">3</span>
+			
+			<a class="destroy" href="#">(reset)</a>
+		</p>
+		<ul class="slider-ctrls">
+			<li class="prev">Previous</li>
+			<li class="play">Play/Stop</li>
+			<li class="next">Next</li>
+		</ul>
+		<ul class="slider-nav">
+			<li class="item">Item 1</li>
+		</ul>
+	</div>
+	
+	
+	<!-- SLIDER -->
+	<h3 id="slider-heading" class="visuallyhidden">Latest news</h3>
+	<div id="slider" class="slider" role="region" aria-labelledby="slider-heading">
+		
+		<!-- Timer -->
+		<div class="timer">
+			<div class="progress"></div>
+		</div>
+		
+		<!-- Slides -->
+		<ul>
+			<li class="slide">
+				<a href="#link1">
+					<img alt="slide 1" src="images/image1.jpg">
+					<div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+				</a>
+			</li>
+			<li class="slide">
+				<a href="#link2">
+					<img alt="slide 2" src="images/image2.jpg">
+					<div>Integer sit amet gravida urna. In nec commodo felis.</div>
+				</a>
+			</li>
+			<li class="slide">
+				<a href="#link3">
+					<img alt="slide 3" src="images/image3.jpg">
+					<div>Fusce eu risus tristique, varius massa ac, malesuada diam.</div>
+				</a>
+			</li>
+		</ul>
+		
+	</div>
+	
+	
+</div><!-- .container -->
+</div><!-- .wrapper -->
+
+
+
+</body>
+</html>

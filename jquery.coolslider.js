@@ -1,5 +1,5 @@
 /*
- * coolslider v3.01
+ * coolslider v3.2
  * http://github.com/romanmz/coolslider
  * By Roman Martinez - http://romanmz.com
  */
@@ -8,6 +8,7 @@
 	
 	
 	// ----- Private Data -----
+	var name = 'coolslider';
 	var defaults = {
 		type:	'scroll',
 	};
@@ -51,7 +52,7 @@
 		// Create objects
 		var placeholder = $('<div>').css({ visibility: 'hidden', overflow: 'hidden' });
 		var innerPlaceholder = $('<div>').css({ width: ( slides.length * 100 )+'%' });
-		var slidesClones = slides.clone().css({ float: 'left', width: ( 100 / slides.length )+'%' });
+		var slidesClones = slides.clone().css({ float: 'left', width: ( 100 / slides.length )+'%' }).removeClass( 'clear' );
 		
 		// Append to DOM
 		placeholder.insertBefore( slides.first() );
@@ -87,8 +88,8 @@
 			
 			// Bind functions to events
 			slider
-			.on( 'slideshowchangestart', showCurrent )
-			.on( 'slideshowdestroy', destroy );
+			.on( 'slideshowchangestart.'+name, showCurrent )
+			.on( 'slideshowdestroy.'+name, destroy );
 			
 		},
 		
@@ -217,16 +218,16 @@
 			
 			// ----- Bind Functions -----
 			slider
-			.on( 'slideshowinit', init )
-			.on( 'slideshowdestroy', destroy )
-			.on( 'slideshowchangestart', changeStart )
-			.on( 'slideshowchangeend', changeEnd )
+			.on( 'slideshowinit.'+name, init )
+			.on( 'slideshowdestroy.'+name, destroy )
+			.on( 'slideshowchangestart.'+name, changeStart )
+			.on( 'slideshowchangeend.'+name, changeEnd )
 			if( usingTouch ) {
 				slider
-				.on( 'touchstart', touchStart )
-				.on( 'touchmove', touchMove )
-				.on( 'swipe', swipe )
-				.on( 'swipefail', swipeFail );
+				.on( 'touchstart.'+name, touchStart )
+				.on( 'touchmove.'+name, touchMove )
+				.on( 'swipe.'+name, swipe )
+				.on( 'swipefail.'+name, swipeFail );
 			}
 		},
 		
@@ -288,6 +289,7 @@
 				clones1.add( clones2 ).remove();
 				wrapper.removeAttr( 'style' );
 				slides.stop( true, true ).removeAttr( 'style' );
+				slider.off( '.'+name );
 				
 			}
 			
@@ -392,17 +394,17 @@
 			
 			// ----- Bind Functions -----
 			slider
-			.on( 'slideshowinit', init )
-			.on( 'slideshowdestroy', destroy )
-			.on( 'slideshowchangestart', changeStart )
-			.on( 'slideshowchangeend', changeEnd )
-			.on( 'slideshowupdate', updateClasses )
+			.on( 'slideshowinit.'+name, init )
+			.on( 'slideshowdestroy.'+name, destroy )
+			.on( 'slideshowchangestart.'+name, changeStart )
+			.on( 'slideshowchangeend.'+name, changeEnd )
+			.on( 'slideshowupdate.'+name, updateClasses )
 			if( usingTouch ) {
 				slider
-				.on( 'touchstart', touchStart )
-				.on( 'touchmove', touchMove )
-				.on( 'swipe', swipe )
-				.on( 'swipefail', swipeFail );
+				.on( 'touchstart.'+name, touchStart )
+				.on( 'touchmove.'+name, touchMove )
+				.on( 'swipe.'+name, swipe )
+				.on( 'swipefail.'+name, swipeFail );
 			}
 		},
 	};
@@ -412,11 +414,11 @@
 	// --------------------------------------------------
 	// Constructor
 	// --------------------------------------------------
-	$.fn.coolslider = function( userSettings ) {
+	$.fn[name] = function( userSettings ) {
 		return this.each(function(){
 			
 			// Setup Slideshow
-			var API			= new $.slideshow( this, $.extend( {}, defaults, userSettings, $(this).data( 'coolslider' ) ), true );
+			var API			= new $.slideshow( this, $.extend( {}, defaults, userSettings, $(this).data( name ) ), true );
 			var settings	= API.settings;
 			var slider		= API.element;
 			var slides		= API.slides;

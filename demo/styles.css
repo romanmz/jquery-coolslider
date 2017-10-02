@@ -1,0 +1,176 @@
+
+/* --- Basics --- */
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	margin: 0;
+}
+a {
+	color: #069;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all .5s;
+}
+a:hover {
+	color: #39C;
+}
+:focus {
+	outline: none;
+}
+a:focus {
+	box-shadow: 0 0 8px 0 #007fff;
+}
+.container {
+	overflow: hidden;
+	padding: 20px 0;
+}
+.wrapper {
+	max-width: 500px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+
+/* --- Helpers --- */
+.clearfix:before,
+.clearfix:after {
+	content: " ";
+	display: table;
+}
+.clearfix:after {
+	clear: both;
+}
+.clearfix {
+	*zoom: 1;
+}
+.visuallyhidden {
+	position: absolute;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	margin: -1px;
+	border: 0;
+	padding: 0
+}
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+	position: static;
+	height: auto;
+	width: auto;
+	overflow: visible;
+	clip: rect(auto auto auto auto);
+	clip: rect(auto, auto, auto, auto);
+	margin: 0
+}
+
+
+/* --- Controls --- */
+.slider-ctrls-box {
+	margin: 0 0 15px;
+}
+.slider-status {
+	margin: 0 0 10px;
+}
+.slider-ctrls,
+.slider-nav {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.slider-ctrls {
+	float: left;
+}
+.slider-nav {
+	float: right;
+}
+.slider-ctrls-box li {
+	float: left;
+}
+.slider-ctrls-box li a {
+	display: block;
+	min-width: 10px;
+	padding: 2px 8px;
+	border-radius: 2px;
+	text-align: center;
+	margin: 0 1px 0 0;
+	color: #333;
+	background: #DDD;
+}
+.slider-ctrls-box li a:hover,
+.slider-ctrls-box li a:focus {
+	color: white;
+	background: #999;
+}
+.slider-ctrls-box li.selected a {
+	color: white;
+	background: #069;
+}
+.slider-ctrls-box li.disabled a {
+	color: #333;
+	background: #DDD;
+	cursor: default;
+	opacity: .25;
+}
+
+
+/* --- Slider --- */
+.slider {
+	box-shadow: 0 0 5px rgba(0,0,0,0.5);
+	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+}
+.slider ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.slide {
+	position: relative;
+}
+.slide.selected {
+}
+.slide img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border: none;
+}
+.slide div {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	padding: 6px 12px;
+	box-sizing: border-box;
+	line-height: 1.25;
+	color: #DDD;
+	background: black;
+	background: rgba(0,0,0,0.8);
+}
+.slide:focus {
+	box-shadow: 0 0 5px red;
+}
+.slide a {
+	display: block;
+}
+
+
+/* --- Visual Timer --- */
+.timer {
+	position: relative;
+	z-index: 1;
+	background: #FFF;
+}
+.timer .progress {
+	background: #069;
+	position: relative;
+	left: 0;
+	width: 20%;
+}
+.playing .progress {
+	height: 3px;
+}

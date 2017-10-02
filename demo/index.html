@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>coolslider Demo</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<link href="styles.cssx" rel="stylesheet">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../jquery.coolslider.pkgd.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			
+			// Init slider
+			$('#slider').coolslider({
+				
+				// Basics
+				type:				'scroll',	// 'scroll' or 'fade'
+				slides:				'.slide',	// css selector
+				speed:				500,		// speed of transitions
+				timer:				8000,		// time before changing to next slide during autoplay
+				showFirst:			1,			//
+				autoplay:			false,		//
+				keyboard:			true,		// control with keyboard arrows
+				pauseOnFocus:		true,		// pause when a slide gains focus when using keyboard navigation
+				loop:				false,		//
+				useTouch:			true,		// enable swiping on touch devices
+				
+				// CSS selectors
+				controlsPrev:		'#slider-controls .prev',
+				controlsNext:		'#slider-controls .next',
+				controlsPlay:		'#slider-controls .play',
+				controlsItems:		'#slider-controls .item',
+				
+				// HTML
+				textPrev:			'«<span class="visuallyhidden"> Previous slide</span>',
+				textNext:			'<span class="visuallyhidden">Next slide </span>»',
+				textPlay:			'<span class="visuallyhidden">Play Animation </span>▶',
+				textStop:			'<span class="visuallyhidden">Stop Animation </span>￭',
+				textItem:			'<span class="visuallyhidden">Slide </span>{title}',
+				textCurrentItem:	'<span class="visuallyhidden">Slide </span>{title}<span class="visuallyhidden"> (current slide)</span>',
+				
+				// CSS class names
+				classSelected:		'selected',
+				classTransition:	'transitioning',
+				classPlaying:		'playing',
+				classDisabled:		'disabled',
+				
+			});
+			
+		});
+	</script>
+</head>
+<body>
+
+
+
+<div class="container">
+<div class="wrapper">
+	
+	
+	<!-- CONTROLS -->
+	<div id="slider-controls" class="slider-ctrls-box clearfix">
+		<ul class="slider-ctrls">
+			<li class="prev">Previous</li>
+			<li class="play">Play/Stop</li>
+			<li class="next">Next</li>
+		</ul>
+		<ul class="slider-nav">
+			<li class="item">Item 1</li>
+		</ul>
+	</div>
+	
+	
+	<!-- SLIDER -->
+	<h3 id="slider-heading" class="visuallyhidden">Latest news</h3>
+	<div id="slider" class="slider" role="region" aria-labelledby="slider-heading">
+		
+		<!-- Slides -->
+		<ul>
+			<li class="slide">
+				<a href="#link1">
+					<img alt="slide 1" src="images/image1.jpg">
+					<div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+				</a>
+			</li>
+			<li class="slide">
+				<a href="#link2">
+					<img alt="slide 2" src="images/image2.jpg">
+					<div>Integer sit amet gravida urna. In nec commodo felis.</div>
+				</a>
+			</li>
+			<li class="slide">
+				<a href="#link3">
+					<img alt="slide 3" src="images/image3.jpg">
+					<div>Fusce eu risus tristique, varius massa ac, malesuada diam.</div>
+				</a>
+			</li>
+		</ul>
+		
+	</div>
+	
+	
+</div><!-- .container -->
+</div><!-- .wrapper -->
+
+
+
+</body>
+</html>
